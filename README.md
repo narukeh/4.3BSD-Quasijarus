@@ -10,7 +10,7 @@ This is the result of following the [tavi.co.uk/unixhistory/quasijarus.html](htt
 
 Everything is ready. I did it so you dont have to. I have installed 4.3BSD Quasijarus and **NOTHIG** else. So you have a pure system.
 
-From here you can do what you want. I Would suggest to copy/backup the file `quasdisk.dsk`, if you mess things up, you can easily revert.
+From here you can do what you want. I would suggest to copy/backup the file `quasdisk.dsk`, if you mess things up, you can easily revert.
 
 ----
 
@@ -33,6 +33,7 @@ What else you need: Nothing really (if you're using a 64bit linux distro), i eve
 ### How to:
 
 FIRST: Uncompress the disk image `quasdisk.dsk.xz`. I had to compress the disk image. Github limit it 100Mb.
+
 `unxz quasdisk.dsk.xz`
 
 Read the [quasijarus.html](docs/quasijarus.html#stage4) stage 4. But Here is a **very short** tutorial, to **just** start it:
