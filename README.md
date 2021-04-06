@@ -20,12 +20,12 @@ What else you need: Nothing really (if you're using a 64bit linux distro), i eve
 
 ### Contents:
 
-- File `vax`: Its from [official simh](https://github.com/simh/simh/releases/tag/v3.8-1) repo, version 3.8.-1. Use this if your distro doesnt have the `simh` package, or if it wont work with this project. This is a x86_64 binary. [SimH Github Repo](https://github.com/simh/simh/)
+- File `vax`: Its from [official simh](https://github.com/simh/simh/releases/tag/v3.8-1) repo, version 3.8.-1. Use this if your distro doesnt have the `simh` package, or if it wont work with this project. This is a x86_64 binary. [SimH Github Repo.](https://github.com/simh/simh/)
 - File `quasdisk.dsk` is the "disk" of the system. Thats where the system is installed. make a copy of it for backup.
 - Files `boot.ini  init.ini  vax_better.ini  vax.ini` are configs for the SimH emulator.
 - Directory `src`: Every file mentioned in [tavi.co.uk/unixhistory/quasijarus.html](https://www.tavi.co.uk/unixhistory/quasijarus.html) page. So you have everything you need if you want to do it yourself.
 - Directory `docs/`:
-	- File `quasijarus.html`: The main documentation. If you want to do it yourself, this is all you need
+	- File `quasijarus.html`: The main documentation. If you want to do it yourself, this is all you need.
 	- File `Installing_4.3_BSD_Quasijarus_on_SIMH.html` is in readable form of `gunkies.org/Installing 4.3 BSD Quasijarus on SIMH - Computer History Wiki.html`, which is a recommended read.
 
 ----
@@ -43,4 +43,5 @@ Read the [quasijarus.html](docs/quasijarus.html#stage4) stage 4. But Here is a *
 >wait to prompt, then type `b`
 >
 >wait for login prompt, then type `root`
+>
 >if root has a password, its `password`.
