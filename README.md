@@ -44,4 +44,4 @@ Read the [quasijarus.html](docs/quasijarus.html#stage4) stage 4. But Here is a *
 >
 >wait for login prompt, then type `root`
 >
->if root has a password, its `password`.
+>if root has a password, its `root`.
