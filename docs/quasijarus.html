@@ -1,0 +1,1183 @@
+<?xml version="1.1" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<link rel="stylesheet" type="text/css" href="unixhistory.css" />
+<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+<meta name="keywords" content="UNIX, talk history, books, simulators" />
+<title>4.3 Quasijarus</title>
+</head>
+
+<!-- T I T L E ============================================================ -->
+
+<body>
+
+<!----------------------------------------------------------------------------
+	Note that all resources for this page are kept in ./quasijarus,
+	rather than in the separate ./zip etc. directories.
+----------------------------------------------------------------------------->
+
+
+<table class="titlebox">
+<tr>
+<td class="smalltitle" align="center">unixhistory</td>
+<td class="subtitle">4.3 Quasijarus</td>
+<td align="right" class="smalltitle">
+<script type="text/javascript"><!--
+amazon_ad_tag="thmlimapr-21";
+amazon_ad_width="180";
+amazon_ad_height="150";
+amazon_color_background="EBE8C0";
+amazon_color_border="0033FF";
+amazon_color_logo="DDD37F";
+amazon_color_text="38352A";
+amazon_color_link="34338B";
+amazon_ad_logo="hide";
+amazon_ad_link_target="new";
+amazon_ad_title="Bob's books - books.tavi.co.uk"; //--></script>
+<script type="text/javascript" src="http://www.assoc-amazon.co.uk/s/asw.js"></script>
+</td>
+</tr>
+</table>
+
+<!-- B O D Y ============================================================== -->
+<hr />
+
+<table width="100%" cellspacing="15">
+  <tr>
+<!-- S i d e b a r ======================================================== -->
+  <td class="sidebox" valign="top">
+    <table class="sidebar" width="100%" border="0" cellpadding="1">
+      <tr><td><a href="index.html">Home</a></td></tr>
+      <tr><td><a href="gnu.html">GNU and FSF</a></td></tr>
+      <tr><td><a href="hacks.html">Hacks and fun</a></td></tr>
+      <tr><td><a href="books.html">Books</a></td></tr>
+      <tr><td><a href="links.html">Links</a></td></tr>
+      <tr><td><a href="simulation.html">Simulation</a></td></tr>
+      <tr><td><a href="mini-unix.html">Mini-UNIX</a></td></tr>
+      <tr><td>Quasijarus</td></tr>
+      <tr><td><a href="whatnext.html">What next?</a></td></tr>
+      <tr><td><a href="contact.html">Contact details</a></td></tr>
+    </table>
+  </td>
+<!-- M a i n ============================================================== -->
+  <td class="main" valign="top" rowspan="2">
+
+<h2>Overview</h2>
+<p>
+Quasijarus is a fork (a divergent development) of 4.3-Tahoe, itself a
+fork of the original 4.3BSD. It was maintained for a good deal longer,
+although many links and sites now seem to be dead or otherwise inaccessible.
+That is why I have produced this page, which pulls together information I
+have discovered, and that I already knew (I have used v6, v7, 4.0BSD, 4.1BSD,
+4.2BSD, 4.3BSD and later).
+</p>
+
+<h3>Acknowledgements</h3>
+<p>
+Thanks are due to too many people to mention here. They include the
+original BSD developers, those of 4.3-Tahoe, and the developers and
+maintainers of Quasijarus itself. Particular thanks go to those who have
+kept the various files alive, and to those who have written instructions
+on which much of the rest of this page is based. I would link to some of
+them, but the dead links just cause confusion, so I hope that everything
+needed is right here.
+</p>
+
+<h3>Notation</h3>
+<p>
+To avoid confusion, any typed input is shown in <span class="input">red</span>,
+ and output is in black.
+In addition, input and output is shown in a fixed width font.
+</p>
+
+<h3>Quasijarus, the VAX, and SIMH</h3>
+<p>
+Quasijarus, as a derivative of 4.3BSD, is designed to run on the VAX
+machine architecture. You may be lucky enough (like me) to own a real
+VAX or two, but most people will need to run this on a simulator. One of
+the most well known simulators is called SIMH. You can find it here, at
+<a href="http://simh.trailing-edge.com/" target="_blank">http://simh.trailing-edge.com/</a>
+(be careful not to omit the hyphen).
+</p>
+
+<h3>Disk partitions</h3>
+<p>
+It's worth saying a little here about disk partitioning. BSD (and other
+systems) often split disks into smaller pieces which are each treated as
+a logical disk. The terminology varies, but they are commonly called
+<em>partitions</em>. The early Sixth Edition UNIX was written in such a
+way that the whole system assumed a disk could have no more than 65,536
+blocks (this was on a 20MB DEC RP02, which had about 40,000 blocks).
+When the RP03 (twice the size) came out, it had about 80,000 blocks, and
+the quick fix was to divide it into two manageable pieces; only the
+device driver needed changing, so that it presented two logical disks
+for each physical one.
+</p>
+<p>
+However, partitioning is also a good way of separating out function on a
+disk. The partitions are described by the <em>disk label</em>, which is
+a small table near the start of the disk. Some partitions are
+preassigned by long convention, and the way they are referenced depends
+on if the disk has actually been labelled, or a certain fixed layout has
+been assumed; thus, they might be referred to by number or by name.
+Typically a disk will have eight partitions, laid out like
+this:
+</p>
+<table class="partitions">
+<tr>
+<th class="partnum">Number</th>
+<th class="partname">Name</th>
+<th class="partuse">Usage</th>
+</tr>
+<tr>
+<td class="partnum">0</td>
+<td class="partname">a</td>
+<td class="partuse">Root partition</td>
+</tr>
+<tr>
+<td class="partnum">1</td>
+<td class="partname">b</td>
+<td class="partuse">Swap partition</td>
+</tr>
+<tr>
+<td class="partnum">2</td>
+<td class="partname">c</td>
+<td class="partuse">Whole-disk partition</td>
+</tr>
+<tr>
+<td class="partnum">3</td>
+<td class="partname">d</td>
+<td class="partuse">Spare partition</td>
+</tr>
+<tr>
+<td class="partnum">4</td>
+<td class="partname">e</td>
+<td class="partuse">Spare partition</td>
+</tr>
+<tr>
+<td class="partnum">5</td>
+<td class="partname">f</td>
+<td class="partuse">Spare partition</td>
+</tr>
+<tr>
+<td class="partnum">6</td>
+<td class="partname">g</td>
+<td class="partuse">/usr partition</td>
+</tr>
+<tr>
+<td class="partnum">7</td>
+<td class="partname">h</td>
+<td class="partuse">/home partition</td>
+</tr>
+</table>
+<p>
+The name is appended to the end of the disk name, so partition
+<samp>a</samp> as mentioned above might be called <samp>ra0a</samp> or
+<samp>rra0a</samp>. The extra leading <samp>r</samp> denotes a 'raw'
+partition; don't worry too much about this. Partition <samp>c</samp> is
+special; it is a pseudo partition that covers the whole disk, but it is
+rarely used. The layour shown here is the one that we will use.
+</p>
+
+<h2>Getting started</h2>
+<p>
+The following instructions all assume that you are using SIMH, rather
+than some other simulator or even a real machine. Adapt the instructions
+accordingly if you are not using SIMH. It is also assumed that you are using
+a UNIX-like environment (BSD, Linux, Cygwin or similar).
+</p>
+<p>
+You will need the following to get Quasijarus up and running:
+</p>
+<ul>
+<li>A copy of the <samp>unzip</samp> utility to unpack some of the files.</li>
+<li>A working copy of SIMH for the VAX. This is supplied with a
+microcode file named <samp>ka655x.bin</samp>; see the SIMH instructions for
+more details.</li>
+<li>An 'installation tape'. Normally, this will be just a file (a
+<em>tape image</em>) which has to be connected to SIMH so that it looks
+like a tape to the simulated machine. A particular file format is required.
+You have the choice of either downloading this tape image, or doing it the
+hard way and making your own. Make your choice by following <em>one</em>
+of the sets of instructions below.</li>
+</ul>
+
+<h3 id="Method1">Installation preparation - Method 1 - downloading a tape image</h3>
+<p>
+This is really quite simple. Just download
+<a href="quasijarus/quastape.zip">quastape.zip</a> and unzip it. Job done.
+</p>
+
+<h3>Installation preparation - Method 2 - making your own tape image</h3>
+<p>
+The aim of this is to construct an image of the tape from which the
+system is to be installed. This image is just a file, but in a
+particular format that SIMH will understand. For the curious, a
+definition of that format may be found <a
+href="quasijarus/simh_magtape.pdf">here</a>. The tape needs to contain a
+number of large files, in a strictly defined order.
+</p>
+<p>
+The files required are shown below. You can download them via these links.
+The first six files are essential:
+</p>
+<ul>
+<li><a href="quasijarus/stand.Z">stand.Z</a></li>
+<li><a href="quasijarus/miniroot.Z">miniroot.Z</a></li>
+<li><a href="quasijarus/rootdump.Z">rootdump.Z</a></li>
+<li><a href="quasijarus/usr.tar.Z">usr.tar.Z</a></li>
+<li><a href="quasijarus/srcsys.tar.Z">srcsys.tar.Z</a></li>
+<li><a href="quasijarus/src.tar.Z">src.tar.Z</a></li>
+</ul>
+<p>
+The remaining files are used to update the console media on a real VAX
+(these machines often had a smaller machine, typically a PDP-11, handling
+the boot process). There is no need to download these unless you are
+curious about them, or you have a real VAX to play with.
+</p>
+<ul>
+<li><a href="quasijarus/cassette.Z">cassette.Z</a></li>
+<li><a href="quasijarus/consolerl.Z">consolerl.Z</a></li>
+<li><a href="quasijarus/floppy.Z">floppy.Z</a></li>
+</ul>
+<p>
+These files have been compressed using an obsolete compression program;
+luckily, the format is very similar to that used by the well known
+<samp>gzip</samp> program. All that is required is a small amount of
+tweaking, which can be done by a program called <samp>gzcompat</samp>;
+download it <a href="quasijarus/gzcompat.zip">here</a>. Instructions on
+building and using <samp>gzcompat</samp> are included with the source
+code.
+</p>
+<p>
+Once you have <samp>gzcompat</samp> built, decompress all of the <samp>.Z</samp>
+files using these commands:
+</p>
+<pre>
+        $ <span class="input">gzcompat stand.Z | zcat &gt; stand</span>
+        $ <span class="input">gzcompat miniroot.Z | zcat &gt; miniroot</span>
+        $ <span class="input">gzcompat rootdump.Z | zcat &gt; rootdump</span>
+        $ <span class="input">gzcompat usr.tar.Z | zcat &gt; usr.tar</span>
+        $ <span class="input">gzcompat srcsys.tar.Z | zcat &gt; srcsys.tar</span>
+        $ <span class="input">gzcompat src.tar.Z | zcat &gt; src.tar</span>
+</pre>
+<p>
+If you wish (and you have downloaded them), decompress the console media files
+as well:
+</p>
+<pre>
+        $ <span class="input">gzcompat cassette.Z | zcat &gt; cassette</span>
+        $ <span class="input">gzcompat consolerl.Z | zcat &gt; consolerl</span>
+        $ <span class="input">gzcompat floppy.Z | zcat &gt; floppy</span>
+</pre>
+<p>
+You now need to build the tape image. The format is pretty simple, but
+there are one or two slight complications. You can download a C program
+to do the job; it's called <samp>mksimtape</samp>, and it can be
+downloaded <a href="quasijarus/mksimtape.zip">here</a>. Most of the
+files will be on the 'tape' (in the tape image, that is) with a block
+size of 10240 bytes, but the first file has to have a block size of 512
+bytes. <samp>mksimtape</samp> will usually use 10240, but can generate
+other block sizes on request by giving the block size after the file
+name (separated by a colon).
+</p>
+<p>
+The files have to be written in a specific order, so they are just given
+to <samp>mksimtape</samp> in that order; the tape image is written to
+standard output, so redirect that somewhere suitable. The command you
+need is:
+</p>
+<pre>
+        $ <span class="input">mksimtape stand:512 miniroot rootdump usr.tar srcsys.tar src.tar &gt; quastape.tap</span>
+</pre>
+<p>
+The file <samp>quastape.tap</samp> should be the same as the one you could
+have obtained using <a href="#Method1">Method 1</a> above.
+</p>
+<h3>Creating an empty disk image</h3>
+<p>
+Now that you have a tape image as an installation medium, you need an
+image of an empty disk onto which you can install the system. This is
+merely an empty file, with the correct size for the simulated disk you
+intend to use. Quasijarus can use a number of different simulated disks,
+but an RA82 is probably a good choice. Other choices are given in the
+following table:
+</p>
+<table class="disks">
+<tr>
+<th class="disksnames">Disk</th><th class="diskssize">Approximate size</th><th class="diskblocks">Logical blocks</th>
+</tr>
+<tr>
+<td class="disksnames">RA81</td><td class="diskssize">456MB</td><td class="disksblocks">891072</td>
+</tr>
+<tr>
+<td class="disksnames">RA82</td><td class="diskssize">623MB</td><td class="disksblocks">1216665</td>
+</tr>
+<tr>
+<td class="disksnames">RA71</td><td class="diskssize">700MB</td><td class="disksblocks">1367310</td>
+</tr>
+<tr>
+<td class="disksnames">RA72</td><td class="diskssize">1GB</td><td class="disksblocks">1953300</td>
+</tr>
+<tr>
+<td class="disksnames">RA90</td><td class="diskssize">1.26GB</td><td class="disksblocks">2376153</td>
+</tr>
+<tr>
+<td class="disksnames">RA92</td><td class="diskssize">1.5GB</td><td class="disksblocks">2940951</td>
+</tr>
+</table>
+<p>
+Remember that you will need enough disk space for a file of the
+appropriate size (e.g. about 620MB for an RA82). You can create an empty
+file of the right size with a command similar to this:
+</p>
+<pre>
+        $ <span class="input">dd if=/dev/zero of=quasdisk.dsk bs=512 count=1216665</span>
+</pre>
+<p>
+Use whatever name you like for the file (<samp>of=...</samp>), and
+select the appropriate number of blocks for the disk type you choose
+(<samp>count=...</samp>). Note that the file, which only represents the data space
+on the disk, will be smaller than the quoted size in the table above.
+</p>
+
+<h2>Installation</h2>
+<p>
+The actual installation takes place in several
+stages:
+</p>
+<ol>
+<li><a href="#stage1">Stage 1</a> - boot from the installation tape and copy
+a minimal system (the <em>miniroot</em>) to the disk.</li>
+<li><a href="#stage2">Stage 2</a> - boot from the minimal system on disk, and restore the real
+root filesystem from the filesystem dump on the tape.</li>
+<li><a href="#stage3">Stage 3</a> - boot from the real root system, and restore the rest of the
+partitions.</li>
+<li><a href="#stage4">Stage 4</a> - boot from the complete system, and tidy up.</li>
+</ol>
+<p>
+At each stage, the simulator has to be set up correctly. The easiest way
+to do this is to give it an <em>initialisation file</em>, which simply
+contains some necessary simulator commands. You can download copies of
+suitable files here, in a ZIP file called <a
+href="quasijarus/initfiles.zip">initfiles.zip</a>. Note that these
+files, as supplied, assume that the installation tape image is in a file
+called <samp>quastape.tap</samp>, and that the installation disk image
+is in a file called <samp>quasdisk.dsk</samp>. Edit these if required; in
+particular, change the disk and tape image file names if required, and
+change any references to the disk type (e.g. <samp>ra82</samp>) if you
+choose to use a different one.
+</p>
+<p>
+You may notice that the last command in the initialisation file
+is generally <samp>boot cpu</samp>. This doesn't actually boot a system;
+it starts the CPU firmware, which offers lots of commands from its
+<samp>&gt;&gt;&gt;</samp> prompt.
+</p>
+
+<h3 id="stage1">Stage 1 - booting the installation tape and copying the miniroot</h3>
+<p>
+We are now ready to boot that simulated machine for the first time. The
+purpose of this stage is to boot a minimal utility program from the
+tape, and then use that to copy a minimal system to the disk. The
+procedure is as follows; note that the name of the initialisation file
+has to be given to the simulator, and we start by using the one called
+<samp>init.ini</samp>:
+</p>
+<pre>
+          $ <span class="input">vax init.ini</span>
+          VAX simulator V3.9-0
+          Loading boot code from ka655x.bin
+          Loading boot code from /usr/local/share/simh/ka655x.bin
+
+
+          KA655-B V5.3, VMB 2.7
+           1) Dansk
+           2) Deutsch (Deutschland/Vsterreich)
+           3) Deutsch (Schweiz)
+           4) English (United Kingdom)
+           5) English (United States/Canada)
+           6) Espaqol
+           7) Frangais (Canada)
+           8) Frangais (France/Belgique)
+           9) Frangais (Suisse)
+          10) Italiano
+          11) Nederlands
+          12) Norsk
+          13) Portugujs
+          14) Suomi
+          15) Svenska
+           (1..15): <span class="input">4</span>
+          Performing normal system tests.
+          40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+          24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+          08..07..06..05..04..03..
+          Tests completed.
+          &gt;&gt;&gt;
+</pre>
+<p>
+The messages may vary slightly, depending on your system. You may not
+even be asked to choose a language. The VAX is now running, and we tell
+it to boot from the tape: The name of the tape device is in the DEC
+format rather than the BSD one, so it is <samp>MUA0</samp> (the first MU
+controller, unit 0).
+</p>
+<pre>
+          &gt;&gt;&gt;<span class="input">boot mua0</span>
+          (BOOT/R5:0 MUA0
+
+
+
+            2..
+          -MUA0
+            1..0..
+
+          =
+</pre>
+<p>
+The <samp>=</samp> prompt is from a standalone utility program (the
+<samp>stand</samp> file on the tape); it has only three commands
+(<samp>boot</samp>, <samp>copy</samp> and <samp>format</samp>). For now,
+we need the <samp>copy</samp> command. We are copying from the tape
+device, unit 0, file 1; the files are numbered from 0, so we are copying
+the <samp>miniroot</samp> file. We are copying this to the disk device,
+unit 0, partition 1; the partitions are numbered from 0, so we are
+copying to the second partition. Remember, there is a predefined
+partitioning scheme for each disk, although until the disk is labelled
+(see later) this isn't actually stored on the disk. You willl have
+noticed that the second partition is nominally the swap partition, but
+at present we are merely using it as a temporary place to put the
+miniroot.
+</p>
+<pre>
+          =<span class="input">copy</span>
+          cpu: uVAX 3000
+          From: <span class="input">tms(0,1)</span>
+          To: <span class="input">ra(0,1)</span>
+          Copy completed: 308 records copied
+
+          HALT instruction, PC: 00000006 (HALT)
+          sim&gt; <span class="input">quit</span>
+          $
+</pre>
+<p>
+Note that the machine was halted after the copy finished. Type <samp>quit</samp>
+at the <samp>sim&gt;</samp> prompt to exit the emulator for a clean start in the
+next phase.
+</p>
+
+<h3 id="stage2">Stage 2 - booting the miniroot and restoring the root dump</h3>
+<p>
+We now need to boot again from tape, and this time run the <samp>boot</samp>
+program from the tape.
+This is because we don't yet have any boot program on the disk.
+This allows us to boot the miniroot.
+</p>
+<pre>
+          $ <span class="input">vax init.ini</span>
+          VAX simulator V3.9-0
+          Loading boot code from ka655x.bin
+          Loading boot code from /usr/local/share/simh/ka655x.bin
+
+
+          KA655-B V5.3, VMB 2.7
+           1) Dansk
+           2) Deutsch (Deutschland/Vsterreich)
+           3) Deutsch (Schweiz)
+           4) English (United Kingdom)
+           5) English (United States/Canada)
+           6) Espaqol
+           7) Frangais (Canada)
+           8) Frangais (France/Belgique)
+           9) Frangais (Suisse)
+          10) Italiano
+          11) Nederlands
+          12) Norsk
+          13) Portugujs
+          14) Suomi
+          15) Svenska
+           (1..15): <span class="input">4</span>
+          Performing normal system tests.
+          40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+          24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+          08..07..06..05..04..03..
+          Tests completed.
+          &gt;&gt;&gt;<span class="input">boot mua0</span>
+          (BOOT/R5:0 MUA0
+
+
+
+            2..
+          -MUA0
+            1..0..
+
+          =<span class="input">boot</span>
+          cpu: uVAX 3000
+
+          Boot
+          : <span class="input">ra(0,1)vmunix</span>
+          327204+103384+130352 start 0x23a8
+          4.3 BSD Quasijarus UNIX #0: Sat Oct  2 22:15:38 CDT 1999
+              msokolov@luthien:/usr/src/sys/GENERIC
+          real mem  = 16744448
+          SYSPTSIZE limits number of buffers to 112
+          avail mem = 14920704
+          using 112 buffers containing 917504 bytes of memory
+          MicroVAX 3000, ucode rev 6
+          tmscp0 at uba0 csr 174500 vec 774, ipl 15
+          tms0 at tmscp0 slave 0
+          uda0 at uba0 csr 172150 vec 770, ipl 15
+          uda0: version 3 model 3
+          uda0: DMA burst size set to 4
+          ra0 at uda0 slave 0: no disk label: ra82, size = 1216665 sectors
+          root device? <span class="input">ra0*</span>
+          WARNING: clock gained 158 days -- CHECK AND RESET THE DATE!
+          erase ^?, kill ^U, intr ^C
+          #
+</pre>
+<p>
+The boot program said <samp>Boot</samp> and then prompted for input.
+We want to boot off the second partition (i.e. partition 1)
+of <samp>ra</samp> unit 0 (since
+that is where we put the miniroot), and we want to boot the file
+<samp>vmunix</samp>, as that is the standard name for a BSD kernel. After a
+while, there is a prompt for a root device. The system doesn't know about
+the disk partitions at this stage, because there is no partition table (or
+<em>disk label</em>, as it is known). We thus specify <samp>ra0</samp>, but add
+a <samp>*</samp> to the end, which is a way of saying 'the second partition'
+(don't worry why). After a short delay, we have a real root command prompt.
+</p>
+<p>
+Now we need to sort out the disk label. This is a small table which is
+added near the start of the disk; it defines the layout of the
+partitions which so far we have been using implicitly, and also contains
+the primary and secondary boot programs. It is 16 sectors (8kB) in size.
+We need to
+include those boot programs as well, so that in future we can boot directly from
+the disk.
+</p>
+<pre>
+          # <span class="input">disklabel -rw ra0 ra82 &quot;Quasijarus&quot; /usr/mdec/rdboot /usr/mdec/bootra</span>
+</pre>
+<p>
+You can use any name you like (up to 16 characters) for the disk; here,
+we have used <samp>Quasijarus</samp>. <samp>ra0</samp> obviously defines
+the physical disk, and <samp>ra82</samp> gives the type of disk; this
+must match the 'hardware' (i.e. what appears in
+<samp>init.ini</samp>). The disk type is used to allocate the
+partitions with the right sizes, driven by a file called
+<samp>/etc/disktab</samp>. The last two parameters specify the boot programs
+to be put on the disk; primary and secondary boot, respectively.
+</p>
+<p>
+Now we need to do two things. First, we must create an empty root file
+system on the <em>first</em> partition (known as <samp>/dev/rra0a</samp> now
+that the disk has been labelled). Second, we must restore the real
+(full) root file system from the <samp>rootdump</samp> file (the third
+on the tape). There is a convenient shell script called <samp>xtr</samp>
+for this, but it needs three variables to be set; these specify the disk,
+disk type, and tape.
+</p>
+<pre>
+          # <span class="input">disk=ra0 type=ra82 tape=tms xtr</span>
+          Build root file system
+          Warning: 361 sector(s) in last cylinder unallocated
+          /dev/rra0a:     15884 sectors in 19 cylinders of 15 tracks, 57 sectors
+                  8.1MB in 2 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+          super-block backups (for fsck -b #) at:
+           32, 13776,
+          Check the file system
+          ** /dev/rra0a
+          ** Last Mounted on
+          ** Phase 1 - Check Blocks and Sizes
+          ** Phase 2 - Check Pathnames
+          ** Phase 3 - Check Connectivity
+          ** Phase 4 - Check Reference Counts
+          ** Phase 5 - Check Cyl groups
+          1 files, 1 used, 7092 free (20 frags, 884 blocks, 0.3% fragmentation)
+          Rewind tape
+          Restore the dump image of the root
+          ** /dev/rra0a
+          ** Last Mounted on /a
+          ** Phase 1 - Check Blocks and Sizes
+          ** Phase 2 - Check Pathnames
+          ** Phase 3 - Check Connectivity
+          ** Phase 4 - Check Reference Counts
+          ** Phase 5 - Check Cyl groups
+          425 files, 5198 used, 1895 free (15 frags, 235 blocks, 0.2% fragmentation)
+          Root filesystem extracted
+
+          If this is an 8650 or 8600, update the console rl02
+          If this is a 780 or 785, update the floppy
+          If this is a 730, update the cassette
+</pre>
+<p>
+Ignore the messages about updating boot media (RL02, floppy and cassette),
+since we are running on a simulated MicroVAX 3000, and not one of the systems
+mentioned.
+</p>
+<p>
+Once again, if you are simulating a disk other than an RA82, modify the
+command accordingly. Lastly, it is a good idea to use the
+<samp>sync</samp> command at least twice, to make sure that any buffers
+are flushed to the disk. Press Control-E (^E) to stop the simulator, and then
+type <samp>quit</samp> to exit from it.
+</p>
+<pre>
+          # <span class="input">sync</span>
+          # <span class="input">sync</span>
+          # <span class="input">^E</span>
+          Simulation stopped, PC: 800029B7 (BNEQ 800029CE)
+          sim&gt; <span class="input">quit</span>
+          Goodbye
+          $
+</pre>
+
+<h3 id="stage3">Stage 3 - booting the real system and restoring the rest</h3>
+<p>
+We can now boot the newly installed root file system, directly from disk. This
+is <em>only</em> the root system, so we need to restore the rest of the disk
+from the tape.
+</p>
+<p>
+For this stage, we use a slightly modified initialisation file for SIMH.
+This file is called <samp>boot.ini</samp>, and a sample can once again
+be found in <a href="quasijarus/initfiles.zip">initfiles.zip</a>. The
+differences are:
+</p>
+<ul>
+<li>We simulate the machine's <em>non-volatile RAM</em>. This is where
+information is remembered between boots. The NVRAM's contents need to be
+stored in a file; we will use one called <samp>nvram.bin</samp>.</li>
+<li>We can define a default boot device.</li>
+<li>We can set up the hardware so that it will automatically boot from the
+default device. This is optional, and probably best left until later.
+There are details in comments inside the provided <samp>boot.ini</samp>.</li>
+</ul>
+<p>
+Edit <samp>boot.ini</samp> as required, then start the simulator with it:
+</p>
+<pre>
+          $ <span class="input">vax boot.ini</span>
+
+          VAX simulator V3.9-0
+          NVR: buffering file in memory
+          Loading boot code from ka655x.bin
+          Loading boot code from /usr/local/share/simh/ka655x.bin
+
+
+          KA655-B V5.3, VMB 2.7
+           1) Dansk
+           2) Deutsch (Deutschland/Vsterreich)
+           3) Deutsch (Schweiz)
+           4) English (United Kingdom)
+           5) English (United States/Canada)
+           6) Espaqol
+           7) Frangais (Canada)
+           8) Frangais (France/Belgique)
+           9) Frangais (Suisse)
+          10) Italiano
+          11) Nederlands
+          12) Norsk
+          13) Portugujs
+          14) Suomi
+          15) Svenska
+           (1..15): <span class="input">4</span>
+          Performing normal system tests.
+          40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+          24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+          08..07..06..05..04..03..
+          Tests completed.
+          &gt;&gt;&gt;<span class="input">set boot dua0</span>
+</pre>
+<p>
+Once again, we were asked for the language to be used. This should be
+the last time, as now that NVRAM is enabled, the choice will be
+remembered. The <samp>set boot dua0</samp> command sets a default boot
+device, to save us having to type it every time. From now on, we only need
+to type <samp>boot</samp>, or even just <samp>b</samp>:
+</p>
+<pre>
+          &gt;&gt;&gt;<span class="input">boot</span>
+          (BOOT/R5:0 DUA0
+
+
+
+            2..
+          -DUA0
+            1..0..
+
+          loading boot
+
+          Boot
+          : /vmunix
+          327204+103384+130352 start 0x23a8
+          4.3 BSD Quasijarus UNIX #0: Sat Oct  2 22:15:38 CDT 1999
+              msokolov@luthien:/usr/src/sys/GENERIC
+          real mem  = 16744448
+          SYSPTSIZE limits number of buffers to 112
+          avail mem = 14920704
+          using 112 buffers containing 917504 bytes of memory
+          MicroVAX 3000, ucode rev 6
+          tmscp0 at uba0 csr 174500 vec 774, ipl 15
+          tms0 at tmscp0 slave 0
+          uda0 at uba0 csr 172150 vec 770, ipl 15
+          uda0: version 3 model 3
+          uda0: DMA burst size set to 4
+          ra0 at uda0 slave 0: ra82, size = 1216665 sectors
+          Changing root device to ra0a
+          Automatic reboot in progress...
+          Tue Mar 21 15:00:55 CST 2000
+          Can't open checklist file: /etc/fstab
+          Automatic reboot failed... help!
+          erase ^?, kill ^U, intr ^C
+          #
+</pre>
+<p>
+Don't worry about the alarming messages; they are only temporary. The
+next task is to create file systems on some of the other partitions. We
+need to set up partitions <samp>g</samp> and <samp>h</samp>, since they
+are suitable sizes for what we want.
+The <samp>newfs</samp> command sets up an empty file
+system structure on a specified partition; it is also told the type of
+disk in use. These partitions will be for the <samp>/usr</samp> and
+<samp>/home</samp> file systems respectively.
+</p>
+<pre>
+          # <span class="input">newfs ra0g ra82</span>
+          /dev/rra0g:     841320 sectors in 984 cylinders of 15 tracks, 57 sectors
+                  430.8MB in 62 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+          super-block backups (for fsck -b #) at:
+           32, 13776, 27520, 41264, 55008, 68752, 82496, 96240, 109984,
+           123728, 137472, 151216, 164960, 178704, 192448, 206192, 218912, 232656,
+           246400, 260144, 273888, 287632, 301376, 315120, 328864, 342608, 356352,
+           370096, 383840, 397584, 411328, 425072, 437792, 451536, 465280, 479024,
+           492768, 506512, 520256, 534000, 547744, 561488, 575232, 588976, 602720,
+           616464, 630208, 643952, 656672, 670416, 684160, 697904, 711648, 725392,
+           739136, 752880, 766624, 780368, 794112, 807856, 821600, 835344,
+          # <span class="input">newfs ra0h ra82</span>
+          Warning: 209 sector(s) in last cylinder unallocated
+          /dev/rra0h:     291346 sectors in 341 cylinders of 15 tracks, 57 sectors
+                  149.2MB in 22 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+          super-block backups (for fsck -b #) at:
+           32, 13776, 27520, 41264, 55008, 68752, 82496, 96240, 109984,
+           123728, 137472, 151216, 164960, 178704, 192448, 206192, 218912, 232656,
+           246400, 260144, 273888, 287632,
+          #
+</pre>
+<p>
+Next, we mount the <samp>ra0g</samp> partition on </samp>/usr</samp>,
+create the directory <samp>/home</samp>, and mount <samp>ra0h</samp> on that.
+</p>
+<pre>
+          # <span class="input">mount /dev/ra0g /usr</span>
+          # <span class="input">mkdir /home</span>
+          # <span class="input">mount /dev/ra0h /home</span>
+</pre>
+<p>
+We also need to create device nodes in </samp>/dev</samp> for the tape
+device, and for the DZ-11 (the terminal multiplexer).
+</p>
+<pre>
+          # <span class="input">cd /dev</span>
+          # <span class="input">MAKEDEV tmscp0</span>
+          # <span class="input">MAKEDEV dz0</span>
+</pre>
+<p>
+The next tasks are to restore the three sets of files in
+<samp>/usr</samp>. First, <samp>/usr</samp> itself. We rewind the tape
+and move forward three files (<samp>fsf</samp> means 'forward space
+file'), then extract the fourth file to <samp>/usr</samp>.
+</p>
+<pre>
+          # <span class="input">cd /usr</span>
+          # <span class="input">mt rew</span>
+          # <span class="input">mt fsf 3</span>
+          # <span class="input">tar xpbf 20 /dev/rmt12</span>
+</pre>
+<p>
+Now we create the directories <samp>/usr/src</samp> and <samp>/usr/src/sys</samp>,
+skip over the file marker
+on the tape, and extract the fifth file to <samp>/usr/src/sys</samp>.
+</p>
+<pre>
+          # <span class="input">mkdir src</span>
+          # <span class="input">cd src</span>
+          # <span class="input">mkdir sys</span>
+          # <span class="input">cd sys</span>
+          # <span class="input">mt fsf</span>
+          # <span class="input">tar xpbf 20 /dev/rmt12</span>
+</pre>
+<p>
+Next, we move back up to <samp>/usr/src</samp>, skip forward to the sixth file
+on the tape, and extract it to <samp>/usr/src</samp>.
+</p>
+<pre>
+          # <span class="input">cd ..</span>
+          # <span class="input">mt fsf</span>
+          # <span class="input">tar xpbf 20 /dev/rmt12</span>
+          #
+</pre>
+<p>
+Lastly, we create <samp>/etc/fstab</samp>, the file system table. This
+specifies where partitions are to be mounted on each boot. There are
+several fields for each entry: the first is the device name for the
+partition, and the second is where it should be mounted (or
+<samp>none</samp> if it is not to be mounted). The third entry is
+<samp>rw</samp> for read/write access, or <samp>sw</samp> if this is a
+swap partition. Don't worry about the rest of the entry for now; you can
+always look it up later. The input is ended by typing control-D
+(<samp>^D</samp>).
+</p>
+<pre>
+          # <span class="input">cd /etc</span>
+          # <span class="input">cat > fstab</span>
+          <span class="input">/dev/ra0a:/:rw:1:1</span>
+          <span class="input">/dev/ra0b:none:sw:1:1</span>
+          <span class="input">/dev/ra0g:/usr:rw:1:2</span>
+          <span class="input">/dev/ra0h:/home:rw:1:3</span>
+          <span class="input">^D</span>
+          #
+</pre>
+<p>
+Now, we shut down so that we can boot from the newly restored complete
+system.
+</p>
+<pre>
+          # <span class="input">reboot</span>
+          syncing disks... done
+
+          HALT instruction, PC: 8002F700 (BRB 8002F6FF)
+          sim> <span class="input">quit</span>
+          Goodbye
+          NVR: writing buffer to file
+          $
+</pre>
+
+<h3 id="stage4">Stage 4 - Booting from the complete system, and tidying up</h3>
+<p>
+Now that we have a complete system, we need yet another initialisation
+file for SIMH. This one just has a few lines changed or added. The first
+<samp>set</samp> <em>replaces</em> the <samp>set dz disable</samp> line, as we
+now want to enable the DZ-11 serial line multiplexer. We also set the
+number of active lines to 8 (the maximum), and set the lines to operate
+in 7 bit mode. We also 'attach' the DZ-11 to a TCP/IP port - we have
+chosen 8023, as this is a 'local' telnet port with a rather non-standard
+destination.
+</p>
+<pre>
+          ; Enable the DZ-11 serial lines
+          set dz enable
+          attach dz 8023
+          set dz lines=8
+          set dz 7b
+</pre>
+<p>
+The other set of lines in our modified initialisation file
+<em>replace</em> the <samp>set xq disable</samp> line. This is because
+we want to enable the XQ interface, which is an Ethernet interface, so
+that we can use networking. We set the interface to simulate a DEQNA, as
+that is well supported by Quasijarus, and we attach <samp>xq0</samp> to
+our local real hardware Ethernet interface, so substitute that for
+<samp>em0</samp> in the example. For more details, see the SIMH documentation.
+</p>
+<pre>
+          ; Attach the Ethernet interface
+          set xq enable
+          set xq type=deqna
+          attach xq0 em0
+</pre>
+<p>
+A copy of this modified file is provided inside <a
+href="quasijarus/initfiles.zip">initfiles.zip</a>, and it is called
+<samp>vax.ini</samp>. This name was chosen for a reason; it is the <em>
+default</em> name for the VAX SIMH initialisation file, so we don't have
+to use its name explicitly any more.
+</p>
+<p>
+Having incorporated any other changes into <samp>vax.ini</samp>, it is time
+to boot again. This time, the simulator gives us a couple of extra messages:
+one tells us that it is listening on port 8023 for simulated DZ-11 activity,
+and the other tells us that the simulated DEQNA has attached to our own
+network interface.
+</p>
+<pre>
+          $ <span class="input">vax</span>
+
+          VAX simulator V3.9-0
+          Listening on port 8025 (socket 4)
+          Eth: opened OS device em0
+          NVR: buffering file in memory
+          Loading boot code from ka655x.bin
+          Loading boot code from /usr/local/share/simh/ka655x.bin
+
+
+          KA655-B V5.3, VMB 2.7
+          Performing normal system tests.
+          40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+          24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+          08..07..06..05..04..03..
+          Tests completed.
+          &gt;&gt;&gt;<span class="input">b</span>
+          (BOOT/R5:0 DUA0
+
+
+
+            2..
+          -DUA0
+            1..0..
+
+          loading boot
+
+          Boot
+          : /vmunix
+          327204+103384+130352 start 0x23a8
+          4.3 BSD Quasijarus UNIX #0: Sat Oct  2 22:15:38 CDT 1999
+              msokolov@luthien:/usr/src/sys/GENERIC
+          real mem  = 16744448
+          SYSPTSIZE limits number of buffers to 112
+          avail mem = 14920704
+          using 112 buffers containing 917504 bytes of memory
+          MicroVAX 3000, ucode rev 6
+          tmscp0 at uba0 csr 174500 vec 774, ipl 15
+          tms0 at tmscp0 slave 0
+          uda0 at uba0 csr 172150 vec 770, ipl 15
+          uda0: version 3 model 3
+          uda0: DMA burst size set to 4
+          ra0 at uda0 slave 0: ra82, size = 1216665 sectors
+          dz0 at uba0 csr 160100 vec 300, ipl 17
+          dz1 at uba0 csr 160110 vec 310, ipl 17
+          qe0 at uba0 csr 174440 vec 764, ipl 14
+          qe0: deqna, hardware address 08:00:2b:aa:bb:cc
+          Changing root device to ra0a
+          Automatic reboot in progress...
+          Mon Mar 27 06:21:36 CST 2000
+          /dev/ra0a: 451 files, 5230 used, 1863 free (15 frags, 231 blocks, 0.2% fragmentation)
+          /dev/rra0g: 12266 files, 71414 used, 323437 free (405 frags, 40379 blocks, 0.1% fragmentation)
+          /dev/rra0h: 1 files, 1 used, 136503 free (15 frags, 17061 blocks, 0.0% fragmentation)
+          Mon Mar 27 06:21:44 CST 2000
+          checking quotas: done.
+          starting system logger
+
+          preserving editor files
+          clearing /tmp
+          standard daemons: update        Mon Mar 27 06:21:45 CST 2000
+           cron accounting.
+          starting network daemons: routedMar 27 06:21:45 myname named[82]: /etc/named.boot: No such file or directory
+           named inetd printer.
+          starting local daemons: sendmail.
+          Mon Mar 27 06:21:45 CST 2000
+
+
+          4.3 BSD UNIX (myname.my.domain) (console)
+
+          login:<span class="input">root</span>
+</pre>
+
+<p>
+One minor bit of tidying up is to delete a file left behind by the restore
+of the root file system:
+</p>
+<pre>
+          # <span class="input">rm /restoresymtable</span>
+</pre>
+
+<p>
+We will now need to edit some files. The obvious editor to use is
+<samp>vi/ex</samp>, or perhaps <samp>ed</samp>, which will work on any
+terminal.
+</p>
+<p>
+The first thing is to make the system aware of its own name.
+For this example, we use <samp>quasijarus.example.com</samp>; substitute
+your own choice here.
+We will also use the example IP address <samp>192.168.42.254</samp>.
+First, add the name and IP address the <samp>/etc/hosts</samp> file:
+</p>
+<pre>
+          $ <span class="input">cat >> /etc/hosts
+          192.168.42.254 quasijarus.example.com
+          ^D</span>
+          $
+</pre>
+<p>
+Note that we completed the input with control-D (<samp>^D</samp>).
+We also need to do a number of edits to <samp>/etc/netstart</samp>; the whole
+file is shown below, with sample changes shown in red. The default route
+is only necessary if you want to specify a gateway to other networks,
+and of course you will need to supply the correct address.
+</p>
+<pre>
+          #!/bin/sh -
+          #
+          #       @(#)netstart    1.1 (Berkeley) 1/10/99
+
+          routedflags=-q
+          rwhod=NO
+
+          # myname is my symbolic name
+          # my-netmask is specified in /etc/networks
+          #
+          <span class="input">hostname=quasijarus.example.com</span>
+          hostname $hostname
+
+          <span class="input">#</span>ifconfig imp0 inet $hostname
+          <span class="input">#</span>ifconfig de0 inet $hostname netmask my-netmask
+          <span class="input">#</span>ifconfig qe0 inet $hostname netmask my-netmask
+          <span class="input">ifconfig qe0 192.168.42.254 netmask 255.255.255.0
+          route add default 192.168.42.129 1</span>
+
+          ifconfig lo0  inet localhost
+          route add $hostname localhost 0
+          hostid $hostname
+</pre>
+<p>
+Now, disable the local DNS server; we will use the one on our own network.
+Use of the local DNS server (<samp>named</samp>) is outside the scope of these
+instructions. To disable the local DNS server, comment out the relevant line in
+<samp>/etc/rc</samp>:
+</p>
+<pre>
+          <span class="input">#</span>named;                 echo -n ' named'                >/dev/console
+</pre>
+<p>
+Now specify your network's own DNS server in <samp>/etc/resolv.conf</samp>,
+substituting its IP address:
+</p>
+<pre>
+          $ <span class="input">cat > /etc/resolv.conf
+          nameserver 192.168.42.130
+          ^D</span>
+          $
+</pre>
+<p>
+The easiest way to get all this to take effect is to reboot (not shown
+here).
+</p>
+<p>
+You are really on your own from here; manual pages are available
+via the <samp>man</samp> command.
+</p>
+
+<h3>Other information</h3>
+<p>
+This section contains oddments of useful information.
+</p>
+
+<h4>Other information</h4>
+<p>
+Although everything you need to know for installation is detailed above, there is lots more
+information in the original setup instructions, which can be found
+<a href="quasijarus/setup.zip">here</a>.
+</p>
+<p>
+A list of changes can be found <a href="quasijarus/qjchanges.zip">here</a>.
+</p>
+<p>
+Details of the original distribution tape layout can be found
+<a href="quasijarus/tapelayout.zip">here</a>.
+</p>
+
+<h4>Idle time tuning</h4>
+<p>
+If you let Quasijarus go quiescent, you will still see a rather high CPU usage
+on the system hosting the emulator. This is because, when idle, Quasijarus
+goes into a tight loop waiting for something to happen.
+</p>
+<p>
+You can tell SIMH to recognise Quasijarus' particular idle loop, and
+make allowance for it. This will reduce CPU usage considerably. To do this,
+add the following to <samp>vax.ini</samp>:
+</p>
+<pre>
+          set cpu idle=quasijarus
+</pre>
+
+<h4>Boot flags</h4>
+<p>
+When you boot the CPU (at the <samp>&gt;&gt;&gt;</samp> prompt; you
+usually type <samp>boot</samp>, or just <samp>b</samp>). You can give
+some <em>boot flags</em> here, and they'll affect the way the system
+boots. The boot flags are specified as a single hexadecimal number
+following a
+<samp>/</samp> character; the most useful values are as follows, and they
+can be combined (by adding them) if desired.
+</p>
+<ul>
+<li><strong>1</strong>: stop in the bootstrap so that an alternate kernel
+or partition can be specified.</li>
+<li><strong>2</strong>: bring the system up in <em>single user mode</em>
+for maintenance.</li>
+<li><strong>80</strong>: bring the system up with the root file system
+mounted read-only</li>
+</ul>
+<p>
+For example, to boot into single user mode:
+</p>
+<pre>
+          &gt;&gt;&gt;<span class="input">boot/2</span>
+</pre>
+
+<h4>Date and time</h4>
+<p>
+Quasijarus is not Year 2000 aware. What you do about this is up to you.
+Hint: start by fixing the <samp>date</samp> command!
+</p>
+
+<h4>Remote access</h4>
+<p>
+The configuration we have set up includes eight remote terminals on two
+simulated four line DZ-11 serial multiplexers. These have been
+associated with port 8023 in our example setup, and we can simply use a
+<samp>telnet</samp> client to access the system running SIMH, on that
+port. We will get a login prompt!
+</p>
+
+<h4>Adding new users</h4>
+<p>
+It is unwise to work as root, since that user has the power to destroy
+the system. You can create a normal user account; full details can be
+found by using the command <samp>man adduser</samp>.
+</p>
+
+<h4>Setting a root password</h4>
+<p>
+It is good practice to set a root password! Use the <samp>passwd</samp>
+command.
+</p>
+
+<!-- E n d   o f   M a i n ================================================ -->
+  </td>
+  </tr>
+  <tr>
+  <td>
+  </td>
+  </tr>
+</table>
+
+<hr />
+<!-- F o o t e r ========================================================== -->
+
+<p><a href="http://validator.w3.org/check/referer">
+<img style="border:0" src="http://www.w3.org/Icons/valid-xhtml11-blue"
+ alt="Valid XHTML 1.1!" height="31" width="88" /></a>
+<a href="http://jigsaw.w3.org/css-validator">
+<img style="border:0" src="http://jigsaw.w3.org/css-validator/images/vcss-blue"
+alt="Valid CSS!" /></a>
+<a href="http://group.bobeager.uk" target="_blank">
+<img style="border:0" src="images/facebook.jpg"
+alt="Facebook logo" /></a>
+</p>
+<p class="footnote">
+This site is copyright
+&copy; 2019
+<a href="mail.html">Bob Eager</a>
+<br />Last updated:
+29 Dec 2019
+</p>
+
+</body>
+</html>

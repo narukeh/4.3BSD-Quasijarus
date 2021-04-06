@@ -1,0 +1,416 @@
+a:hover {
+   color: green;
+   }
+
+hr {
+   height: 1px;
+   border-top: none;
+   }
+
+body {
+   background-color: #FAEBD7;
+   }
+
+h1,h2,h3,h4,h5,h6 {
+   font-family: sans-serif;
+   color: #00008B;                      /* darkblue */
+   }
+
+table.titlebox {
+   text-align: center;
+   width: 100%;
+   }
+
+td.title {
+   font-family: sans-serif;
+   font-weight: bold;
+   color: blue;
+   font-size: 220%;
+   text-align: center;
+   width: 70%;
+   }
+
+td.subtitle {
+   font-family: sans-serif;
+   font-weight: bold;
+   color: red;
+   font-size: 150%;
+   text-align: center;
+   width: 70%;
+   }
+
+td.smalltitle {
+   font-family: sans-serif;
+   font-weight: bold;
+   color: #00008B;                      /* darkblue */
+   font-size: 150%;
+   width: 15%;
+   }
+
+td.sidebox {
+   background-color: #FAEBD7;
+   width: 15%;
+   }
+
+table.sidebar {
+   font-family: serif;
+   font-size: 90%;
+   color: black;
+   background-color: white;
+   text-align: center;
+   }
+
+td.main {
+   background-color: #FAEBD7;
+   font-family: serif;
+   font-size: 100%;
+   color: black;
+   width: 85%;
+   }
+
+table.spec {
+   background-color: white;
+   margin-left: auto;
+   margin-right: auto;
+   border-collapse: collapse;
+   border-style: solid;
+   border-width: medium;
+   border-color: black;
+   width: 80%;
+   }
+
+img {
+   border-style: solid;
+   border-width: medium;
+   border-color: black;
+   }
+
+th.spec {
+   border-collapse: collapse;
+   border-style: solid;
+   border-width: thin;
+   border-color: black;
+   }
+
+td.spec {
+   border-collapse: collapse;
+   border-style: solid;
+   border-width: thin;
+   border-color: black;
+   }
+
+table.doc {
+   background-color: white;
+   font-family: serif;
+   font-size: 100%;
+   color: black;
+   }
+
+td.docname {
+   padding-left: 3%;
+   }
+
+td.doclink {
+   text-align: center;
+   }
+
+td.docinfo {
+   padding-left: 3%;
+   }
+
+table.info {
+   background-color: white;
+   font-family: serif;
+   font-size: 100%;
+   color: black;
+   }
+
+th.infotitle {
+   width: 80%;
+   }
+
+th.infolink {
+   width: 20%;
+   }
+
+td.infotitle {
+   text-align: left;
+   padding-left: 3%;
+   width: 80%;
+   }
+
+td.infolink {
+   text-align: center;
+   width: 20%;
+   }
+
+table.file {
+   background-color: white;
+   font-family: serif;
+   font-size: 100%;
+   color: black;
+   }
+
+td.fversion {
+   text-align: center;
+   }
+
+td.flink {
+   text-align: center;
+   }
+
+td.fname {
+   padding-left: 3%;
+   }
+
+table.ver {
+   background-color: white;
+   font-family: serif;
+   font-size: 100%;
+   color: black;
+   }
+
+td.verfeat {
+   text-align: left;
+   }
+
+td.vername {
+   padding-left: 2%;
+   }
+
+td.verblank {
+   background-color: #D3D3D3;           /* lightgrey */
+   }
+
+table.mail {
+   width: 80%;
+   }
+
+td.maillabel {
+   width: 22%;
+   text-align: left;
+   }
+
+td.mailinput {
+   width: 78%;
+   text-align:left;
+   }
+
+td.mailcontrol1 {
+   width: 25%;
+   }
+
+td.mailcontrol2 {
+   width: 75%;
+   }
+
+table.exeheader {
+   background-color: white;
+   margin-left: auto;
+   margin-right: auto;
+   border-collapse: collapse;
+   border-style: ridge;
+   border-color: black;
+   width: 80%;
+   }
+
+th.exeoffset {
+   border-style: ridge;
+   border-color: black;
+   width: 15%;
+   }
+
+th.exesize {
+   border-style: ridge;
+   border-color: black;
+   width: 10%;
+   }
+
+th.exedesc {
+   border-style: ridge;
+   border-color: black;
+   width: 75%;
+   }
+
+td.exeoffset {
+   text-align: center;
+   border-style: ridge;
+   border-color: black;
+   width: 15%;
+   }
+
+td.exesize {
+   text-align: center;
+   border-style: ridge;
+   border-color: black;
+   width: 10%;
+   }
+
+td.exedesc {
+   border-style: ridge;
+   border-color: black;
+   width: 75%;
+   }
+
+table.registers {
+   background-color: white;
+   margin-left: auto;
+   margin-right: auto;
+   border-collapse: collapse;
+   border-style: ridge;
+   border-color: black;
+   width: 70%;
+   }
+
+th.registersreg {
+   border-style: ridge;
+   border-color: black;
+   width: 15%;
+   }
+
+th.registersvalue {
+   border-style: ridge;
+   border-color: black;
+   width: 85%;
+   }
+
+td.registersreg {
+   border-style: ridge;
+   border-color: black;
+   text-align: center;
+   width: 15%;
+   }
+
+td.registersvalue {
+   border-style: ridge;
+   border-color: black;
+   width: 85%;
+   }
+
+table.disks {
+   background-color: lightgray;
+   margin-left: auto;
+   margin-right: auto;
+   border-collapse: collapse;
+   border-style: double;
+   border-color: black;
+   width: 40%;
+   }
+
+th.disksnames {
+   border-style: solid;
+   border-color: black;
+   border-width: thin;
+   width: 20%;
+   }
+
+th.diskssize {
+   border-style: solid;
+   border-color: black;
+   border-width: thin;
+   width: 40%;
+   }
+
+th.disksblocks {
+   border-style: solid;
+   border-color: black;
+   border-width: thin;
+   width: 40%;
+}
+
+td.disksnames {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 20%;
+}
+
+td.diskssize {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 40%;
+}
+
+td.disksblocks {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 40%;
+}
+
+table.partitions {
+   background-color: lightgray;
+   margin-left: auto;
+   margin-right: auto;
+   border-collapse: collapse;
+   border-style: double;
+   border-color: black;
+   width: 40%;
+   }
+
+th.partnum {
+   border-style: ridge;
+   border-color: black;
+   width: 20%;
+   }
+
+th.partname {
+   border-style: ridge;
+   border-color: black;
+   width: 20%;
+   }
+
+th.partuse {
+   border-style: ridge;
+   border-color: black;
+   width: 60%;
+   }
+
+td.partnum {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 20%;
+}
+
+td.partname {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 20%;
+}
+
+td.partuse {
+   border-style: solid;
+   border-color: black;
+   text-align: center;
+   border-width: 1px;
+   width: 60%;
+}
+
+p.center {
+   text-align: center;
+   }
+
+p.footnote {
+   font-size: smaller;
+   }
+
+p.warning {
+   color: red;
+   }
+
+div.display {
+   text-align: center;
+   }
+
+span.input {
+   color:red;
+   }
+

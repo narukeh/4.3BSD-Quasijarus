@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://hekuran.ga/cssjs/sp.css" type="text/css">
+  <title>Installing 4.3 BSD Quasijarus on SIMH</title>
+</head>
+<h1>Installing 4.3 BSD Quasijarus on SIMH</h1>
+
+<hr>
+<div class="page" id="readability-page-1"><div dir="ltr" lang="en" id="mw-content-text"><p>This is the procedure that I have used to install <a title="4.3 BSD" href="https://gunkies.org/wiki/4.3_BSD">4.3 BSD</a> onto <a title="SIMH" href="https://gunkies.org/wiki/SIMH">SIMH</a>'s <a title="MicroVAX II" href="https://gunkies.org/wiki/MicroVAX_II">MicroVAX II</a> emulator.  Please note that this is the Quasijarus release of 4.3 BSD.
+</p>
+<div id="toc"><p></p><h2>Contents</h2><p></p>
+<ul>
+<li><a href="#Obtaining_an_install_tape"><span>1</span> <span>Obtaining an install tape</span></a></li>
+<li><a href="#Building_your_own_tape_image"><span>2</span> <span>Building your own tape image</span></a>
+<ul>
+<li><a href="#Requirements"><span>2.1</span> <span>Requirements</span></a></li>
+<li><a href="#gzcompat"><span>2.2</span> <span>gzcompat</span></a></li>
+<li><a href="#Preparing_for_installation"><span>2.3</span> <span>Preparing for installation</span></a></li>
+</ul>
+</li>
+<li><a href="#Boot_1."><span>3</span> <span>Boot 1.</span></a>
+<ul>
+<li><a href="#install.ini"><span>3.1</span> <span>install.ini</span></a></li>
+<li><a href="#Booting_the_emulator"><span>3.2</span> <span>Booting the emulator</span></a></li>
+<li><a href="#Creating_the_disk_label"><span>3.3</span> <span>Creating the disk label</span></a></li>
+<li><a href="#Restoring_the_rootdump"><span>3.4</span> <span>Restoring the rootdump</span></a></li>
+</ul>
+</li>
+<li><a href="#Boot_2."><span>4</span> <span>Boot 2.</span></a>
+<ul>
+<li><a href="#boot.ini"><span>4.1</span> <span>boot.ini</span></a></li>
+<li><a href="#Booting_the_emulator_2"><span>4.2</span> <span>Booting the emulator</span></a></li>
+<li><a href="#Preparing_the_disk"><span>4.3</span> <span>Preparing the disk</span></a></li>
+<li><a href="#Restoring_the_usr_slice"><span>4.4</span> <span>Restoring the usr slice</span></a></li>
+<li><a href="#Configuring_the_fstab"><span>4.5</span> <span>Configuring the fstab</span></a></li>
+</ul>
+</li>
+<li><a href="#First_Multiuser_Boot"><span>5</span> <span>First Multiuser Boot</span></a>
+<ul>
+<li><a href="#Enabling_remote_users"><span>5.1</span> <span>Enabling remote users</span></a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h2><span id="Obtaining_an_install_tape">Obtaining an install tape</span></h2>
+<p>You have two choices now, either you can create your own, or you can download a pre-made tape on <a href="https://sourceforge.net/project/showfiles.php?group_id=204974&amp;package_id=309407&amp;release_id=659789" rel="nofollow">sourceforge</a>.  If you want to build your own tape image, then follow the next section.
+</p>
+<h2><span id="Building_your_own_tape_image">Building your own tape image</span></h2>
+<p>I will describe what is needed, and how to create your own Quasijarus tape image, that is suitable for installing with SIMH.
+</p>
+<h3><span id="Requirements">Requirements</span></h3>
+<p>You will need the following materials to put together a 4.3 BSD Quasijarus installation:
+</p>
+<ul><li>A working perl interpeter to make the tape images.<br></li>
+<li>A copy of gzip.<br></li>
+<li>A working C compiler.<br></li>
+<li>A compiled binary of vax from <a title="SIMH" href="https://gunkies.org/wiki/SIMH">SIMH</a>, along with the ka655x.bin again from <a title="SIMH" href="https://gunkies.org/wiki/SIMH">SIMH</a>.</li></ul>
+<div><p>
+You will need the following files from any 4 BSD archive from the Quasijarus0c directory.  I have used the files from <a href="https://sourceforge.net/projects/bsd42/files/Install%20tapes/4.3%20BSD%20Quasijarus%200c/ifctfvax/4.3BSD-Quasijarus0c/" rel="nofollow">Sourceforge</a>.  You you will have to use a web browser to download them, to deal with the sourceforge download system.  But that's the price of free hosting.</p></div>
+<h3><span id="gzcompat">gzcompat</span></h3>
+<p>Next it's easier on a host machine to convert the downloaded Quasijarus files into gzip, then uncompress them using gzip.  For this you will need the <a title="Gzcompat" href="https://gunkies.org/wiki/Gzcompat">gzcompat</a> program.  The sourcecode and a patch for windows compatibility on the link, as it's getting hard to find. Simply compile gzcompat.c. It should be straightforward. The original location for gzcompat is [<a href="http://ifctfvax.superglobalmegacorp.com/releases/UNIX/components/compress.tar" rel="nofollow">here</a>] and a known good copy is [<a href="http://www.tuhs.org/Archive/4BSD/Distributions/components/compress.tar" rel="nofollow">here</a>].
+</p><p>On most instances with gcc simply run:
+</p>
+<pre>gcc gzcompat.c -o gzcompat</pre>
+<p>And that should be it.
+</p>
+<h3><span id="Preparing_for_installation">Preparing for installation</span></h3>
+<p>With the files downloaded you will need to uncompress them all and then create the tape file.  With the different compression this will be somewhat involved.
+</p><p>The following command will decompress the tape files, on a UNIX install.
+</p>
+<pre>cat miniroot.Z | gzcompat | gzip -dc &gt; miniroot
+cat rootdump.Z | gzcompat | gzip -dc &gt; rootdump
+cat src.tar.Z | gzcompat | gzip -dc &gt; src.tar
+cat srcsys.tar.Z | gzcompat | gzip -dc &gt; srcsys.tar
+cat stand.Z | gzcompat | gzip -dc &gt; stand
+cat usr.tar.Z | gzcompat | gzip -dc &gt; usr.tar
+</pre>
+<p>The tape needs to be created with the <a title="Mkdisttap.pl" href="https://gunkies.org/wiki/Mkdisttap.pl">mkdisttap.pl</a> program. Simply run the program and redirect it into a file called quas.tap. You may need to make a few small edits and use TYPE instead of cat when running on Windows. Hints in the link.
+</p>
+<pre>% ./mkdisttap.pl  &gt; quas.tap
+% ls -l quas.tap
+-rw-r--r--  1 Neozeed  None_ploc  84450876 Feb  6 17:10 quas.tap
+%</pre>
+<p>An empty RA82 can be created with:
+</p>
+<pre>% dd if=/dev/zero of=quas.dsk bs=512 count=1216665
+</pre>
+<p>Now we have our tape and disk, so we are ready to proceed with the install.  For those wondering, unlike the 11/780 emulator, the MicrovaxII can run it's microcode in a logical fashion and we are able to boot from tape in this release.
+</p>
+<h2><span id="Boot_1.">Boot 1.</span></h2>
+<p>I disable as many of the devices as possible to get a 'clean' install.  So this is the install.ini that I'm going to use.
+</p>
+<h3><span id="install.ini">install.ini</span></h3>
+<pre>set cr dis
+set lpt dis
+set rl dis
+set ry dis
+set ts dis
+set xq dis
+set rq0 ra82
+att rq0 quas.dsk
+set rq1 dis
+set rq2 dis
+set rq3 dis
+att tq0 quas.tap
+set tti 7b
+set tto 7b
+boot cpu
+</pre>
+<h3><span id="Booting_the_emulator">Booting the emulator</span></h3>
+<p>You then simply run the emulator and pass it the config file.
+</p>
+<pre>C:\Quasijarus0c\work&gt;vax.exe install.ini
+
+VAX simulator V3.8-0
+RQ: creating new file
+Loading boot code from ka655x.bin
+
+←[c
+KA655-B V5.3, VMB 2.7
+Performing normal system tests.
+40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+08..07..06..05..04..03..
+Tests completed.
+&gt;&gt;&gt;boot mua0:
+(BOOT/R5:0 MUA0
+
+
+
+  2..
+-MUA0
+  1..0..
+
+=
+</pre>
+<p>Once the BIOS has done it's POST, it will prompt what device to boot off of at the &gt;&gt;&gt; prompt.  The first tape device is mua0:.  Once the tape has done the first boot you'll be greeted with the = prompt.  From here we are going to load the copy program.  Simply type in the following:
+</p>
+<pre>copy
+tms(0,1)
+ra(0,1)
+</pre>
+<p>This will copy the second file onto tape, onto the second file position on our hard disk.  The output should be the following:
+</p>
+<pre>=copy
+cpu: uVAX 3000
+From: tms(0,1)
+To: ra(0,1)
+ra0: unlabeled
+Copy completed: 308 records copied
+=
+</pre>
+<p>Next we run the boot program.  Simply type in the following:
+</p>
+<pre>boot
+ra(0,1)vmunix
+</pre>
+<p>The resulting output should be the following.  The kernel will then prompt for the root partition.
+</p>
+<pre>=boot
+cpu: uVAX 3000
+
+Boot
+: ra(0,1)vmunix
+ra0: unlabeled
+326312+104440+130352 start 0x23b8
+4.3 BSD Quasijarus UNIX #3: Sat Feb 14 20:31:03 PST 2004
+    root@luthien.Harhan.ORG:/nbsd/usr/src/sys/GENERIC
+real mem  = 16744448
+SYSPTSIZE limits number of buffers to 112
+avail mem = 14920704
+using 112 buffers containing 917504 bytes of memory
+MicroVAX 3000, ucode rev 6
+tmscp0 at uba0 csr 174500 vec 774, ipl 15
+tms0 at tmscp0 slave 0
+tms1 at tmscp0 slave 1
+uda0 at uba0 csr 172150 vec 770, ipl 15
+uda0: version 3 model 3
+uda0: DMA burst size set to 4
+ra0 at uda0 slave 0: no disk label: ra81, size = 891072 sectors
+dz0 at uba0 csr 160100 vec 300, ipl 15
+dz1 at uba0 csr 160110 vec 310, ipl 15
+dz2 at uba0 csr 160120 vec 320, ipl 15
+dz3 at uba0 csr 160130 vec 330, ipl 15
+root device?
+</pre>
+<p>We will answer with the first ra disk, in a special format, because we have not put a disklabel onto the disk yet.
+</p>
+<pre>ra0*
+</pre>
+<p>Once the disk has been mounted we will be dumped to the root prompt.  The next step will be creating the default disk label.
+</p>
+<h3><span id="Creating_the_disk_label">Creating the disk label</span></h3>
+<p>Using the disklabel command we will setup the slices automatically (it's done from a file disktab) then install the boot programs.  This way we can boot from disk.
+</p><p>Simply type in:
+</p>
+<pre>disklabel -rw ra0 ra82 “Quasijarus” /usr/mdec/rdboot /usr/mdec/bootra
+</pre>
+<p>And the disk will now be labled, and bootable from the firmware.
+</p>
+<h3><span id="Restoring_the_rootdump">Restoring the rootdump</span></h3>
+<p>From here we are now running from the miniroot.  The next step is to run the xtr program to restore the root, and then shutdown the emulator.  Enter in the command:
+</p>
+<pre>disk=ra0 type=ra82 tape=tms xtr
+</pre>
+<p>And the following will happen:
+</p>
+<pre># disk=ra0 type=ra82 tape=tms xtr
+Build root file system
+Warning: 361 sector(s) in last cylinder unallocated
+/dev/rra0a:     15884 sectors in 19 cylinders of 15 tracks, 57 sectors
+        8.1MB in 2 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+super-block backups (for fsck -b #) at:
+ 32, 13776,
+Check the file system
+** /dev/rra0a
+** Last Mounted on
+** Phase 1 - Check Blocks and Sizes
+** Phase 2 - Check Pathnames
+** Phase 3 - Check Connectivity
+** Phase 4 - Check Reference Counts
+** Phase 5 - Check Cyl groups
+1 files, 1 used, 7092 free (20 frags, 884 blocks, 0.3% fragmentation)
+Rewind tape
+Restore the dump image of the root
+** /dev/rra0a
+** Last Mounted on /a
+** Phase 1 - Check Blocks and Sizes
+** Phase 2 - Check Pathnames
+** Phase 3 - Check Connectivity
+** Phase 4 - Check Reference Counts
+** Phase 5 - Check Cyl groups
+426 files, 5195 used, 1898 free (18 frags, 235 blocks, 0.3% fragmentation)
+Root filesystem extracted
+
+If this is an 8650 or 8600, update the console rl02
+If this is a 780 or 785, update the floppy
+If this is a 730, update the cassette
+#
+</pre>
+<p>After this stage, I just sync the disk a few times, then halt the emulator (CONTROL+E) and exit out.  Now we are ready for stage two.
+</p>
+<pre>If this is a 730, update the cassette
+# sync
+# sync
+# sync
+
+Simulation stopped, PC: 800029AF (BNEQ 800029C6)
+sim&gt; q
+Goodbye
+
+C:\Quasijarus0c\work&gt;
+</pre>
+<h2><span id="Boot_2.">Boot 2.</span></h2>
+<p>Now that the install disk is prepared, we need to use a different config file to reflect the emulator being able to autoboot to the disk.  The new configuration is as follows:
+</p>
+<h3><span id="boot.ini">boot.ini</span></h3>
+<pre>set cr dis
+set lpt dis
+set rl dis
+set ry dis
+set ts dis
+set xq dis
+set rq0 ra82
+att rq0 quas.dsk
+set rq1 dis
+set rq2 dis
+set rq3 dis
+att tq0 quas.tap
+set tti 7b
+set tto 7b
+att nvr nvram.dat
+dep bdr 1
+boot cpu
+</pre>
+<h3><span id="Booting_the_emulator_2">Booting the emulator</span></h3>
+<p>Now boot up the emulator with the boot.ini  The first time we boot up in this configuration the emulator will prompt for what device will be the default device.  If you typo this, you will have to delete the nvram.dat file, and try again.  The default device will be dua0: which is the primary rq disk.
+</p>
+<pre>C:\Quasijarus0c\work&gt;vax.exe boot.ini
+
+VAX simulator V3.8-0
+NVR: creating new file
+NVR: buffering file in memory
+Loading boot code from ka655x.bin
+
+←[c
+KA655-B V5.3, VMB 2.7
+Performing normal system tests.
+40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+08..07..06..05..04..03..
+Tests completed.
+Loading system software.
+No default boot device has been specified.
+
+Available devices.
+-DUA0 (RA 82)
+-MUA0 (TK 50)
+-MUA1 (TK 50)
+-MUA2 (TK 50)
+-MUA3 (TK 50)
+
+Device? [XQA0]: dua0:
+
+(BOOT/R5:0 DUA0
+
+
+
+  2..
+-DUA0
+  1..0..
+
+loading boot
+
+Boot
+: /vmunix
+326312+104440+130352 start 0x23b8
+4.3 BSD Quasijarus UNIX #3: Sat Feb 14 20:31:03 PST 2004
+    root@luthien.Harhan.ORG:/nbsd/usr/src/sys/GENERIC
+real mem  = 16744448
+SYSPTSIZE limits number of buffers to 112
+avail mem = 14920704
+using 112 buffers containing 917504 bytes of memory
+MicroVAX 3000, ucode rev 6
+tmscp0 at uba0 csr 174500 vec 774, ipl 15
+tms0 at tmscp0 slave 0
+tms1 at tmscp0 slave 1
+uda0 at uba0 csr 172150 vec 770, ipl 15
+uda0: version 3 model 3
+uda0: DMA burst size set to 4
+ra0 at uda0 slave 0: ra82, size = 1216665 sectors
+dz0 at uba0 csr 160100 vec 300, ipl 15
+dz1 at uba0 csr 160110 vec 310, ipl 15
+dz2 at uba0 csr 160120 vec 320, ipl 15
+dz3 at uba0 csr 160130 vec 330, ipl 15
+Changing root device to ra0a
+Automatic reboot in progress...
+Fri Feb  6 09:47:10 PST 2004
+Can't open checklist file: /etc/fstab
+Automatic reboot failed... help!
+erase ^?, kill ^U, intr ^C
+#
+</pre>
+<h3><span id="Preparing_the_disk">Preparing the disk</span></h3>
+<p>Now we have to prep the machine for both the tape, and the type of disk.  Type in the following commands.
+</p>
+<pre># newfs ra0g ra82
+# newfs ra0h ra82
+# mkdir /home
+# mount /dev/ra0g /usr
+# cd /dev
+# MAKEDEV tmscp0
+# MAKEDEV dz0
+</pre>
+<p>The output will be like this:
+</p>
+<pre># newfs ra0g ra82
+/dev/rra0g:     841320 sectors in 984 cylinders of 15 tracks, 57 sectors
+        430.8MB in 62 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+super-block backups (for fsck -b #) at:
+ 32, 13776, 27520, 41264, 55008, 68752, 82496, 96240, 109984,
+ 123728, 137472, 151216, 164960, 178704, 192448, 206192, 218912, 232656,
+ 246400, 260144, 273888, 287632, 301376, 315120, 328864, 342608, 356352,
+ 370096, 383840, 397584, 411328, 425072, 437792, 451536, 465280, 479024,
+ 492768, 506512, 520256, 534000, 547744, 561488, 575232, 588976, 602720,
+ 616464, 630208, 643952, 656672, 670416, 684160, 697904, 711648, 725392,
+ 739136, 752880, 766624, 780368, 794112, 807856, 821600, 835344,
+# newfs ra0h ra82
+Warning: 209 sector(s) in last cylinder unallocated
+/dev/rra0h:     291346 sectors in 341 cylinders of 15 tracks, 57 sectors
+        149.2MB in 22 cyl groups (16 c/g, 7.00MB/g, 3200 i/g)
+super-block backups (for fsck -b #) at:
+ 32, 13776, 27520, 41264, 55008, 68752, 82496, 96240, 109984,
+ 123728, 137472, 151216, 164960, 178704, 192448, 206192, 218912, 232656,
+ 246400, 260144, 273888, 287632,
+# mkdir /home
+# mount /dev/ra0g /usr
+# cd /dev
+# MAKEDEV tmscp0
+# MAKEDEV dz0
+</pre>
+<h3><span id="Restoring_the_usr_slice">Restoring the usr slice</span></h3>
+<p>The disk's /usr slice will not have been formatted.  We can not go ahead and mount it, and restore the /usr files.
+</p>
+<pre># cd /usr
+# mt rew
+# mt fsf 3
+# tar xpbf 20 /dev/rmt12
+# mkdir src
+# cd src
+# mkdir sys
+# cd sys
+# mt fsf
+# tar xpbf 20 /dev/rmt12
+# cd ..
+# mt fsf
+# tar xpbf 20 /dev/rmt12
+</pre>
+<h3><span id="Configuring_the_fstab">Configuring the fstab</span></h3>
+<p>Now we just need to create the fstab then we can reboot the emulator into multiuser mode.  Enter in the following commands:
+</p>
+<pre># cd /etc
+# cat &gt; fstab
+/dev/ra0a:/:rw:1:1
+/dev/ra0h:/home:rw:1:3
+/dev/ra0g:/usr:rw:1:2
+</pre>
+<p>Now you need to press CONTROL+d which will end the stream. Finally you can tell the emulator to reboot.
+</p>
+<pre># reboot
+syncing disks... done
+
+HALT instruction, PC: 8002F4F8 (BRB 8002F4F7)
+sim&gt; q
+Goodbye
+NVR: writing buffer to file
+</pre>
+<h2><span id="First_Multiuser_Boot">First Multiuser Boot</span></h2>
+<p>Now we can just re-run the last command, and we should boot multiuser!  By default there is no root password.  Also the system will run fsck uppon boot, so depending on your host computer this could take a while.
+</p>
+<pre>C:\Quasijarus0c\work&gt;vax.exe boot.ini
+
+VAX simulator V3.8-0
+NVR: buffering file in memory
+Loading boot code from ka655x.bin
+
+←[c
+KA655-B V5.3, VMB 2.7
+Performing normal system tests.
+40..39..38..37..36..35..34..33..32..31..30..29..28..27..26..25..
+24..23..22..21..20..19..18..17..16..15..14..13..12..11..10..09..
+08..07..06..05..04..03..
+Tests completed.
+Loading system software.
+(BOOT/R5:0 DUA0
+
+
+
+  2..
+-DUA0
+  1..0..
+
+loading boot
+
+Boot
+: /vmunix
+326312+104440+130352 start 0x23b8
+4.3 BSD Quasijarus UNIX #3: Sat Feb 14 20:31:03 PST 2004
+    root@luthien.Harhan.ORG:/nbsd/usr/src/sys/GENERIC
+real mem  = 16744448
+SYSPTSIZE limits number of buffers to 112
+avail mem = 14920704
+using 112 buffers containing 917504 bytes of memory
+MicroVAX 3000, ucode rev 6
+tmscp0 at uba0 csr 174500 vec 774, ipl 15
+tms0 at tmscp0 slave 0
+tms1 at tmscp0 slave 1
+uda0 at uba0 csr 172150 vec 770, ipl 15
+uda0: version 3 model 3
+uda0: DMA burst size set to 4
+ra0 at uda0 slave 0: ra82, size = 1216665 sectors
+dz0 at uba0 csr 160100 vec 300, ipl 15
+dz1 at uba0 csr 160110 vec 310, ipl 15
+dz2 at uba0 csr 160120 vec 320, ipl 15
+dz3 at uba0 csr 160130 vec 330, ipl 15
+Changing root device to ra0a
+Automatic reboot in progress...
+Fri Feb  6 09:59:45 PST 2004
+/dev/ra0a: 448 files, 5199 used, 1894 free (22 frags, 234 blocks, 0.3% fragmentation)
+/dev/rra0g: 12312 files, 71682 used, 323169 free (417 frags, 40344 blocks, 0.1% fragmentation)
+/dev/rra0h: 1 files, 1 used, 136503 free (15 frags, 17061 blocks, 0.0% fragmentation)
+Fri Feb  6 09:59:58 PST 2004
+checking quotas: done.
+starting system logger
+
+preserving editor files
+clearing /tmp
+standard daemons: update cron accounting.
+starting network daemons: routedFeb  6 10:00:00 myname named[79]: /etc/named.boo
+t: No such file or directory
+ named inetd printer.
+starting local daemons: sendmail.
+Fri Feb  6 10:00:01 PST 2004
+
+
+4.3 BSD UNIX (myname.my.domain) (console)
+
+login:
+</pre>
+<p><br>
+Now we can simply logon as root.
+</p>
+<pre>Fri Feb  6 10:00:01 PST 2004
+
+
+4.3 BSD UNIX (myname.my.domain) (console)
+
+login: root
+Feb  6 10:01:26 myname login: ROOT LOGIN console
+4.3 BSD Quasijarus UNIX #3: Sat Feb 14 20:31:03 PST 2004
+
+Welcome to UNIX!
+
+erase ^?, kill ^U, intr ^C
+#
+</pre>
+<p>From here you can explore the system.  All of the man pages are installed, and there is enough of a base system to get going.  Right now the networking is outside of the scope of this guide.
+</p>
+<h3><span id="Enabling_remote_users">Enabling remote users</span></h3>
+<p>Shutdown the OS, and add the following lines into the boot.ini (just make sure they are above the boot command or it'll not work correctly..).  This will allow for 8 users to connect on tcp port 8888.
+</p>
+<pre>set dz lines=8
+att dz 8888
+set dz 7b
+</pre>
+<p>I would also recommend to windows users, either <a title="Putty" href="https://gunkies.org/wiki/Putty">putty</a>, or <a title="Syncterm" href="https://gunkies.org/wiki/Syncterm">syncterm</a>.  The default telnet client sucks.
+</p>
+<small><small><a href="https://gunkies.org/wiki/Installing_4.3_BSD_Quasijarus_on_SIMH"><b>Original webpage</b></a></small></small>
+</br>
+<small><small><a href="gunkies.org/Installing 4.3 BSD Quasijarus on SIMH - Computer History Wiki.html"><b>Original archived webpage</b></a></small></small>
+
+</div></div>
+<body>
+
+</body></html>
